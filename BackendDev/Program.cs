@@ -1,4 +1,5 @@
 using BackendDev.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,16 +10,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ContextDataBase>(options => options.UseSqlServer(connection));
 
 var app = builder.Build();
 
-var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
-
 using var serviceScope = app.Services.CreateScope();
 
-var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+var context = serviceScope.ServiceProvider.GetService<ContextDataBase>();
 
 // auto migration
 context?.Database.Migrate();
