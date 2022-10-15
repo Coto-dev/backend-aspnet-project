@@ -1,3 +1,5 @@
+using BackendDev.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,7 +9,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 var app = builder.Build();
+
+var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connection));
+
+using var serviceScope = app.Services.CreateScope();
+
+var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+
+// auto migration
+context?.Database.Migrate();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
