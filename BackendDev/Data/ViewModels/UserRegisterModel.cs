@@ -1,4 +1,6 @@
-﻿namespace BackendDev.Data.Models
+﻿using BackendDev.Data.Models;
+
+namespace BackendDev.Data.ViewModels
 {
     public class UserRegisterModel
     {
@@ -7,6 +9,6 @@
         public string Password { get; set; }
         public string Email { get; set; }
         public string BirthDate { get; set; }
-        public Gender Gender  { get; set; }
+        public Gender Gender { get; set; }
     }
 }
