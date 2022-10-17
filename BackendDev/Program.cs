@@ -1,4 +1,4 @@
-using BackendDev.Data;
+using BackendDev.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +21,7 @@ using var serviceScope = app.Services.CreateScope();
 var context = serviceScope.ServiceProvider.GetService<ContextDataBase>();
 
 // auto migration
-context?.Database.Migrate();
+/*context?.Database.Migrate();*/
 
 
 // Configure the HTTP request pipeline.
