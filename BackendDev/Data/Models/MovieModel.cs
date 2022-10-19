@@ -4,7 +4,7 @@ namespace BackendDev.Data.Models
 {
     public class MovieModel
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Guid Id { get; set; } = Guid.NewGuid();
         public string? Name { get; set; }
         public string? Poster { get; set; }
         public string? Description { get; set; }
@@ -16,7 +16,8 @@ namespace BackendDev.Data.Models
         public int? Budget { get; set; }
         public int? Fees { get; set; }
         public int AgeLimit { get; set; }
-       public List<GenreModel> Genres { get; set; } = new List<GenreModel>();
+        public List<UserModel> UserMovies { get; set; } = new List<UserModel>();
+        public List<GenreModel> MovieGenres { get; set; } = new List<GenreModel>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
      
     }

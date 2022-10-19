@@ -5,10 +5,7 @@ namespace BackendDev.Data.Models
 {
     public class ReviewModelBd
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        [Required]
-        public string UserId { get; set; }
-
+        public Guid Id { get; set; } = Guid.NewGuid();
         [Required(ErrorMessage = "Пустое поле отзыва")]
         public string ReviewText { get; set; }
         [Range(1, 10, ErrorMessage = "Превышен диапозон(от 1 до 10)")]

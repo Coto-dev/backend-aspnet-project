@@ -4,7 +4,7 @@ namespace BackendDev.Data.Models
 {
     public class UserModel
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public Guid Id { get; set; } = Guid.NewGuid();
         [DataType(DataType.DateTime)]
         public string BirthDate { get; set; }
         public string? UserName { get; set; }
@@ -15,7 +15,7 @@ namespace BackendDev.Data.Models
         public string? AvatarLink { get; set; }
        public bool IsAdmin { get; set; }
         public Gender Gender { get; set; }
-        public List<MovieModel> FavouriteMovies { get; set; }  = new List<MovieModel>();
+        public List<MovieModel> UserMovies { get; set; }  = new List<MovieModel>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
     }
 

@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BackendDev.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
+    /*[ApiController]
+    [Route("[controller]")]*/
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
+        /*private static readonly string[] Summaries = new[]
         {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
@@ -28,6 +28,6 @@ namespace BackendDev.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
-        }
+        }*/
     }
 }

@@ -2,7 +2,8 @@
 {
     public class GenreModel
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string Name { get; set; }   
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Name { get; set; }
+        public List<MovieModel> MovieGenres { get; set; } = new List<MovieModel>();
     }
 }

@@ -24,11 +24,9 @@ namespace BackendDev.Migrations
 
             modelBuilder.Entity("BackendDev.Data.Models.GenreModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MovieModelId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -36,15 +34,14 @@ namespace BackendDev.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MovieModelId");
-
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.MovieModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AgeLimit")
                         .HasColumnType("int");
@@ -76,30 +73,26 @@ namespace BackendDev.Migrations
                     b.Property<int>("Time")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserModelId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserModelId");
-
-                    b.ToTable("MovieModels", (string)null);
+                    b.ToTable("MovieModels");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.ReviewModelBd", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("CreateDateTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("MovieModelId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid?>("MovieModelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -108,8 +101,8 @@ namespace BackendDev.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserModelId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid?>("UserModelId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("isAnonymous")
                         .HasColumnType("bit");
@@ -120,13 +113,14 @@ namespace BackendDev.Migrations
 
                     b.HasIndex("UserModelId");
 
-                    b.ToTable("ReviewModels", (string)null);
+                    b.ToTable("ReviewModels");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.UserModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AvatarLink")
                         .HasColumnType("nvarchar(max)");
@@ -154,21 +148,37 @@ namespace BackendDev.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("BackendDev.Data.Models.GenreModel", b =>
+            modelBuilder.Entity("GenreModelMovieModel", b =>
                 {
-                    b.HasOne("BackendDev.Data.Models.MovieModel", null)
-                        .WithMany("Genres")
-                        .HasForeignKey("MovieModelId");
+                    b.Property<Guid>("MovieGenresId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MovieGenresId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("MovieGenresId", "MovieGenresId1");
+
+                    b.HasIndex("MovieGenresId1");
+
+                    b.ToTable("GenreModelMovieModel");
                 });
 
-            modelBuilder.Entity("BackendDev.Data.Models.MovieModel", b =>
+            modelBuilder.Entity("MovieModelUserModel", b =>
                 {
-                    b.HasOne("BackendDev.Data.Models.UserModel", null)
-                        .WithMany("FavouriteMovies")
-                        .HasForeignKey("UserModelId");
+                    b.Property<Guid>("UserMoviesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserMoviesId1")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserMoviesId", "UserMoviesId1");
+
+                    b.HasIndex("UserMoviesId1");
+
+                    b.ToTable("MovieModelUserModel");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.ReviewModelBd", b =>
@@ -182,17 +192,43 @@ namespace BackendDev.Migrations
                         .HasForeignKey("UserModelId");
                 });
 
+            modelBuilder.Entity("GenreModelMovieModel", b =>
+                {
+                    b.HasOne("BackendDev.Data.Models.GenreModel", null)
+                        .WithMany()
+                        .HasForeignKey("MovieGenresId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendDev.Data.Models.MovieModel", null)
+                        .WithMany()
+                        .HasForeignKey("MovieGenresId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("MovieModelUserModel", b =>
+                {
+                    b.HasOne("BackendDev.Data.Models.MovieModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserMoviesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BackendDev.Data.Models.UserModel", null)
+                        .WithMany()
+                        .HasForeignKey("UserMoviesId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BackendDev.Data.Models.MovieModel", b =>
                 {
-                    b.Navigation("Genres");
-
                     b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.UserModel", b =>
                 {
-                    b.Navigation("FavouriteMovies");
-
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

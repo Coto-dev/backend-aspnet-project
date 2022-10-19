@@ -11,7 +11,7 @@ namespace BackendDev.Data.Models
 
         public ContextDataBase(DbContextOptions<ContextDataBase> options) : base(options)
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         /*  protected override void OnModelCreating(ModelBuilder modelBuilder)
