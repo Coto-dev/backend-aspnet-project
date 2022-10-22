@@ -28,7 +28,7 @@ namespace BackendDev.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Post(UserRegisterModel model)
+        public async Task<IActionResult> Post(UserRegisterModel RegisterModelDto)
         {
             if (!ModelState.IsValid) //Проверка полученной модели данных
             {
@@ -37,7 +37,7 @@ namespace BackendDev.Controllers
 
             try
             {
-                await _authService.Add(model);
+                await _authService.Add(RegisterModelDto);
                 return Ok();
             }
             catch (Exception ex)
@@ -48,9 +48,27 @@ namespace BackendDev.Controllers
         }
         [HttpPost]
         [Route("login")]
-        public IActionResult Token([FromForm] LoginCredentials model)
+        public  async Task<IActionResult> Token([FromBody]LoginCredentials LoginDto)
         {
-            var identity = GetIdentity(model.UserName, model.Password);
+            if (!ModelState.IsValid) //Проверка полученной модели данных
+            {
+                return StatusCode(401, "Model is incorrect");
+            }
+
+            try
+            {
+                var response = await _authService.Login(LoginDto);
+                if (response!= null)
+                return response;
+                else return BadRequest(new { errorText = "Invalid username or password." });
+
+            }
+            catch (Exception ex)
+            {
+                // TODO: Добавить логирование
+                return StatusCode(500, "Errors during login user");
+            }
+            /*var identity = GetIdentity(LoginDto.UserName, LoginDto.Password);
             if (identity == null)
             {
                 return BadRequest(new { errorText = "Invalid username or password." });
@@ -73,29 +91,10 @@ namespace BackendDev.Controllers
                 username = identity.Name
             };
 
-            return new JsonResult(response);
+            return new JsonResult(response);*/
         }
 
-        private ClaimsIdentity GetIdentity(string username, string password)
-        {
-            var user = _contextData.Users.FirstOrDefault(x => x.UserName == username && x.Password == password);
-            if (user == null)
-            {
-                return null;
-            }
-
-            // Claims описывают набор базовых данных для авторизованного пользователя
-            var claims = new List<Claim>
-        {
-            new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
-            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
-        };
-
-            //Claims identity и будет являться полезной нагрузкой в JWT токене, которая будет проверяться стандартным атрибутом Authorize
-            var claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-            return claimsIdentity;
-        }
+       
 
         [HttpGet]
         [Authorize]//Данный Endpoint доступен только для авторизованных пользователей

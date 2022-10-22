@@ -1,12 +1,19 @@
-﻿using BackendDev.Data.Models;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BackendDev.Services
 {
     public interface IAuthService
     {
         UserRegisterModel[] GetUserRegisterModel();
-        Task Add(UserRegisterModel model);
+        Task Add(UserRegisterModel RegisterModelDto);
+        Task<IActionResult> Login(LoginCredentials LoginDto);
     }
     public class AuthService : IAuthService
     {
@@ -27,18 +34,65 @@ namespace BackendDev.Services
                 Gender = x.Gender,
             }).ToArray();
         }
-        public async Task Add(UserRegisterModel model)
+        public async Task Add(UserRegisterModel RegisterModelDto)
         {
             await _contextData.Users.AddAsync(new UserModel
             {
-                UserName = model.UserName,
-                Name = model.UserName,
-                Password = model.Password,
-                Email = model.Email,
-                BirthDate = model.BirthDate,
-                Gender = model.Gender,
+                UserName = RegisterModelDto.UserName,
+                Name = RegisterModelDto.UserName,
+                Password = RegisterModelDto.Password,
+                Email = RegisterModelDto.Email,
+                BirthDate = RegisterModelDto.BirthDate,
+                Gender = RegisterModelDto.Gender,
             });
             await _contextData.SaveChangesAsync();
+        }
+        public async Task<IActionResult> Login(LoginCredentials LoginDto)
+        {
+            var identity = await GetIdentity(LoginDto.UserName, LoginDto.Password);
+            if (identity == null)
+            {
+                return null;//(new { errorText = "Invalid username or password." });
+            }
+
+            var now = DateTime.UtcNow;
+            // создаем JWT-токен
+            var jwt = new JwtSecurityToken(
+                issuer: JwtConfigurations.Issuer,
+                audience: JwtConfigurations.Audience,
+                notBefore: now,
+            claims: identity.Claims,
+                expires:  now.Add(TimeSpan.FromMinutes(JwtConfigurations.Lifetime)),
+                signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            var response = new
+            {
+                token = encodedJwt,
+                username =  identity.Name
+            };
+
+            return new JsonResult(response);
+        }
+        private async Task <ClaimsIdentity> GetIdentity(string username, string password)
+        {
+            var user  = await _contextData.Users.FirstOrDefaultAsync(x => x.UserName == username && x.Password == password);
+            if (user == null)
+            {
+                return null;
+            }
+
+            // Claims описывают набор базовых данных для авторизованного пользователя
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimsIdentity.DefaultNameClaimType, user.UserName),
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+        };
+
+            //Claims identity и будет являться полезной нагрузкой в JWT токене, которая будет проверяться стандартным атрибутом Authorize
+            var claimsIdentity =
+                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            return claimsIdentity;
         }
     }
 }
