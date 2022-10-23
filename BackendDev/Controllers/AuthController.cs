@@ -21,10 +21,12 @@ namespace BackendDev.Controllers
 
         private IAuthService _authService;
         private ContextDataBase _contextData;
-        public AuthController(IAuthService authService,ContextDataBase contextData)
+        private readonly ILogger _logger;
+        public AuthController(IAuthService authService,ContextDataBase contextData, ILogger logger)
         {
             _authService = authService;
             _contextData = contextData;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -47,7 +49,7 @@ namespace BackendDev.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: Добавить логирование
+                _logger.LogError(ex.Message);
                 return StatusCode(500, "Errors during adding user");
             }
         }
@@ -70,7 +72,7 @@ namespace BackendDev.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: Добавить логирование
+                _logger.LogError(ex.Message);
                 return StatusCode(500, "Errors during login user");
             }
            
