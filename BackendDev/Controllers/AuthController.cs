@@ -7,6 +7,7 @@ using BackendDev.Services;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -40,6 +41,10 @@ namespace BackendDev.Controllers
                 await _authService.Add(RegisterModelDto);
                 return Ok();
             }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
             catch (Exception ex)
             {
                 // TODO: Добавить логирование
@@ -68,30 +73,7 @@ namespace BackendDev.Controllers
                 // TODO: Добавить логирование
                 return StatusCode(500, "Errors during login user");
             }
-            /*var identity = GetIdentity(LoginDto.UserName, LoginDto.Password);
-            if (identity == null)
-            {
-                return BadRequest(new { errorText = "Invalid username or password." });
-            }
-
-            var now = DateTime.UtcNow;
-            // создаем JWT-токен
-            var jwt = new JwtSecurityToken(
-                issuer: JwtConfigurations.Issuer,
-                audience: JwtConfigurations.Audience,
-                notBefore: now,
-            claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(JwtConfigurations.Lifetime)),
-                signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-            var response = new
-            {
-                access_token = encodedJwt,
-                username = identity.Name
-            };
-
-            return new JsonResult(response);*/
+           
         }
 
        
@@ -99,9 +81,12 @@ namespace BackendDev.Controllers
         [HttpGet]
         [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
         [Route("test_login")]
-        public IActionResult TestAuth()
+        public async Task <IActionResult> TestAuth()
         {
+           var TokenIsValid = await _authService.CheckToken(Request);
+            if (TokenIsValid)
             return Ok($"Ваш логин: {User.Identity.Name}");
+            else return BadRequest(new { errorText = "Invalid token" });
         }
 
         [HttpGet]
@@ -113,11 +98,14 @@ namespace BackendDev.Controllers
         }
 
 
-        /*public async Task<IActionResult> Create(UserModel user)
+        [HttpPost]
+        [Authorize]
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
         {
-            db.Users.Add(user);
-            await db.SaveChangesAsync();
-            return Ok("good");
-        }*/
+            await _authService.Logout(Request);
+           return Ok();
+
+        }
     }
 }

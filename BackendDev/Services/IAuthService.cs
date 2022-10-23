@@ -14,6 +14,8 @@ namespace BackendDev.Services
         UserRegisterModel[] GetUserRegisterModel();
         Task Add(UserRegisterModel RegisterModelDto);
         Task<IActionResult> Login(LoginCredentials LoginDto);
+        Task Logout(HttpRequest httpRequest);
+        Task<bool> CheckToken(HttpRequest httpRequest);
     }
     public class AuthService : IAuthService
     {
@@ -36,6 +38,12 @@ namespace BackendDev.Services
         }
         public async Task Add(UserRegisterModel RegisterModelDto)
         {
+            foreach (UserModel user in _contextData.Users){
+                if (user.UserName == RegisterModelDto.UserName.ToLower())
+                {
+                    throw new ArgumentException("Такой пользователь уже существует");
+                }
+            }
             await _contextData.Users.AddAsync(new UserModel
             {
                 UserName = RegisterModelDto.UserName,
@@ -74,6 +82,31 @@ namespace BackendDev.Services
 
             return new JsonResult(response);
         }
+        public async Task Logout(HttpRequest httpRequest)
+        {
+            var token =  httpRequest.Headers["Authorization"];
+            await _contextData.InvalidTokens.AddAsync(new InvalidToken
+            {
+                JWTToken = token.ToString()
+            });
+            await _contextData.SaveChangesAsync();
+
+            /*  var token = await httpRequest.ReadFormAsync(Headers["Authorization"]);*/
+        }
+        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+        {
+            var token = httpRequest.Headers["Authorization"];
+            foreach ( InvalidToken InvToken in  _contextData.InvalidTokens)
+            {
+                if (InvToken.JWTToken ==  token)
+                {
+                    return Task.FromResult(false);
+                }
+                else return Task.FromResult(true);
+            }
+            return Task.FromResult(true);
+        }
+
         private async Task <ClaimsIdentity> GetIdentity(string username, string password)
         {
             var user  = await _contextData.Users.FirstOrDefaultAsync(x => x.UserName == username && x.Password == password);

@@ -8,6 +8,7 @@ namespace BackendDev.Data.Models
         public DbSet<GenreModel> Genres { get; set; }
         public DbSet<MovieModel> MovieModels { get; set; }
         public DbSet<ReviewModelBd> ReviewModels { get; set; }
+        public DbSet<InvalidToken> InvalidTokens { get; set; }
 
         public ContextDataBase(DbContextOptions<ContextDataBase> options) : base(options)
         {
