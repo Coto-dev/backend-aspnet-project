@@ -64,7 +64,7 @@ namespace BackendDev.Controllers
             {
                 var response = await _authService.Login(LoginDto);
                 if (response!= null)
-                return response;
+                return Ok(response);
                 else return BadRequest(new { errorText = "Invalid username or password." });
 
             }
