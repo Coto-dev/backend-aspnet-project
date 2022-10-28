@@ -9,11 +9,11 @@ namespace BackendDev.Data.ViewModels
         public string? Poster { get; set; }
         public int Year { get; set; }
         public string? Country { get; set; }
-        public List<GenreModelDTO>? Genres { get; set; }
+        public List<GenreModel>? Genres { get; set; }
         public List<ReviewShortModel>? Reviews { get; set; }
 
 
-        public MovieElementModel(string id, string? name, string? poster, int year, string? country, List<GenreModelDTO>? genres, List<ReviewShortModel>? reviews)
+        public MovieElementModel(string id, string? name, string? poster, int year, string? country, List<GenreModel>? genres, List<ReviewShortModel>? reviews)
         {
             Id = id;
             Name = name;
@@ -31,7 +31,7 @@ namespace BackendDev.Data.ViewModels
             Poster = movieModelDb.Poster;
             Year = movieModelDb.Year;
             Country = movieModelDb.Country;
-            Genres = movieModelDb.MovieGenres.Select(x => new GenreModelDTO(x)).ToList();
+            Genres = movieModelDb.MovieGenres.Select(x => new GenreModel(x)).ToList();
             Reviews = movieModelDb.Reviews.Select(x => new ReviewShortModel(x)).ToList();
 
         }

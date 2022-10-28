@@ -1,6 +1,6 @@
 ﻿namespace BackendDev.Data.Models
 {
-    public class GenreModel
+    public class GenreModelBd
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string Name { get; set; }

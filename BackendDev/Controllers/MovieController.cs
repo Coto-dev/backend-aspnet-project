@@ -39,7 +39,19 @@ namespace BackendDev.Controllers
         [Route("{page}")]
         public async Task<ActionResult<MoviesPagedListModel>> GetMoviesPage(int page)
         {
-            return Ok();
+            try
+            {
+                return Ok(_movieService.GetMoviePage(page));
+            }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Добавить логирование
+                return StatusCode(500, "Errors during adding user");
+            }
         }
 
     }

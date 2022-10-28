@@ -49,12 +49,11 @@ namespace BackendDev.Services
             var movieElementModels = movies[Page -1].Select(x => new MovieElementModel(x)).ToList();
             try
             {
-
                  modelDTO = new MoviesPagedListModel(movieElementModels, pageInfo);
             }
             catch
             {
-
+                throw new ArgumentException("Что-то пошло не так при создании MoviesPagedListModel");
             }
             return modelDTO;
         }
