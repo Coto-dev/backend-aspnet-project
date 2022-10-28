@@ -13,5 +13,7 @@ namespace BackendDev.Data.Models
         public bool isAnonymous { get; set; }
         [DataType(DataType.DateTime)]
         public string CreateDateTime { get; set; }
+        [Required]
+        public UserModel User { get; set; }
     }
 }
