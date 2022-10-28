@@ -10,8 +10,8 @@ namespace BackendDev.Data.ViewModels
         public string? Poster { get; set; }
         public int Year { get; set; }
         public string? Country { get; set; }
-        public List<GenreModel>? Genres { get; set; }
-        public ReviewShortModel? Reviews { get; set; }
+        public List<GenreModelDTO>? Genres { get; set; }
+        public List<ReviewModel>? Reviews { get; set; }
         public int Time { get; set; }
         public string? Tagline { get; set; }
         public string? Director { get; set; }
@@ -19,15 +19,22 @@ namespace BackendDev.Data.ViewModels
         public int? Fees { get; set; }
         public int AgeLimit { get; set; }
 
-        /*public MovieDetailsModel(MovieModel model)
+        public MovieDetailsModel(MovieModel model)
         {
             Id = model.Id.ToString();
             Name = model.Name;
             Poster = model.Poster;
             Year = model.Year;
             Country = model.Country;
-            Genres = ;
+            Genres = model.MovieGenres.Select(x=> new GenreModelDTO(x)).ToList();
+            Reviews = model.Reviews.Select(x => new ReviewModel(x)).ToList();
+            Time = model.Time;
+            Tagline = model.Tagline;
+            Director = model.Director;
+            Budget = model.Budget;
+            Fees = model.Fees;
+            AgeLimit = model.AgeLimit;
+        }
 
-        }*/
     }
 }

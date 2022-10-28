@@ -1,11 +1,12 @@
 ﻿using BackendDev.Data.Models;
+using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendDev.Services
 {
   public  interface IMovieService
     {
-        public Task<IActionResult> GetMovieDetails(string Id);
+        public MovieDetailsModel GetMovieDetails(string Id);
         public Task<IActionResult> GetMoviePage(string Page);
     }
     public class MovieService : IMovieService
@@ -15,9 +16,20 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-       public async Task<IActionResult>GetMovieDetails(string Id)
+       public MovieDetailsModel GetMovieDetails(string Id)
         {
-            return null;
+            MovieDetailsModel modelDTO = null;
+            foreach (MovieModel movieDetails in _contextData.MovieModels)
+            {
+                if (Id == movieDetails.Id.ToString())
+                {
+                    modelDTO = new MovieDetailsModel(movieDetails);
+                  
+                }
+            }
+            if (modelDTO != null)
+            return modelDTO;
+            else throw new ArgumentException("Фильм с таким Id не существует");
         }
         public Task<IActionResult> GetMoviePage(string Page) 
         {

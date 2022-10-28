@@ -19,9 +19,21 @@ namespace BackendDev.Controllers
         }
         [HttpGet]
         [Route("details/{id}")]
-        public async Task<ActionResult<MovieDetailsModel>>GetMvoieDetails(string Id)
+        public  ActionResult<MovieDetailsModel> GetMvoieDetails(string Id)
         {
-            return Ok();
+            try
+            {
+                return Ok(_movieService.GetMovieDetails(Id));
+            }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Добавить логирование
+                return StatusCode(500, "Errors during adding user");
+            }
         }
         [HttpGet]
         [Route("{page}")]
