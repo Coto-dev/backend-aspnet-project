@@ -11,7 +11,7 @@ namespace BackendDev.Services
 {
     public interface IAuthService
     {
-        UserRegisterModel[] GetUserRegisterModel();
+        /*UserRegisterModel[] GetUserRegisterModel();*/
         Task Add(UserRegisterModel RegisterModelDto);
         Task<IActionResult> Login(LoginCredentials LoginDto);
         Task Logout(HttpRequest httpRequest);
@@ -24,7 +24,7 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-        public UserRegisterModel[] GetUserRegisterModel()
+       /* public UserRegisterModel[] GetUserRegisterModel()
         {
             return _contextData.Users.Select(x=> new UserRegisterModel
             {
@@ -35,7 +35,7 @@ namespace BackendDev.Services
                 BirthDate = x.BirthDate,
                 Gender = x.Gender,
             }).ToArray();
-        }
+        }*/
         public async Task Add(UserRegisterModel RegisterModelDto)
         {
             foreach (UserModel user in _contextData.Users){

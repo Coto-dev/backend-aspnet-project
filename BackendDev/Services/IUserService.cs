@@ -21,11 +21,12 @@ namespace BackendDev.Services
         }
         public ProfileModel GetProfile(string UserName)
         {
+            var profile = new ProfileModel();
             foreach (UserModel user in _contextData.Users)
             {
                 if (user.UserName == UserName)
                 {
-                    var profile = new ProfileModel
+                     profile = new ProfileModel
                     {
                         Id = user.Id.ToString(),
                         NickName = user.UserName,
@@ -38,12 +39,9 @@ namespace BackendDev.Services
                     };
                     return profile;
                 }
-               /* else
-                {
-                    throw new ArgumentException("Такого пользователя не существует");
-                }*/
+            
             }
-            return null;
+            return profile;
         }
         public async Task EditProfile(ProfileModel modelDto)
         {

@@ -20,28 +20,33 @@ namespace BackendDev.Controllers
         [HttpGet]
         [Authorize]
         [Route("profile")]
-        public async Task<IActionResult> GetProfile(){
+
+        public async Task<ActionResult<ProfileModel>> GetProfile(){
+
             var TokenIsValid = await _userservice.CheckToken(Request);
             if (TokenIsValid)
             {
                 try
                 {
-                    var profile =  _userservice.GetProfile(User.Identity.Name);
+                    var profile = _userservice.GetProfile(User.Identity.Name);
                     if (profile != null)
-                        return Ok(profile);
-                    else return BadRequest(new { errorText = "null profile" });
+                    return Ok(profile);
+                       else return BadRequest(new { errorText = "null profile" });
 
                 }
                 catch (ArgumentException e)
                 {
+
                     return Problem(e.Message);
                 }
                 catch (Exception ex)
                 {
+
                     // TODO: Добавить логирование
                     return StatusCode(500, "Errors get profile");
                 }
             }
+
             else return BadRequest(new { errorText = "Invalid token" });
         }
         [HttpPut]
