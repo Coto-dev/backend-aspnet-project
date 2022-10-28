@@ -3,6 +3,7 @@ using BackendDev.Data.ViewModels;
 using BackendDev.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace BackendDev.Controllers
 {
@@ -11,10 +12,11 @@ namespace BackendDev.Controllers
     public class MovieController : Controller
     {
         private IMovieService _movieService;
-
-        public MovieController(IMovieService movieservice)
+        private IManageFilmsService _manageFilmService;
+        public MovieController(IMovieService movieservice, IManageFilmsService manageFilmsService)
         {
             _movieService = movieservice;
+            _manageFilmService = manageFilmsService;
 
         }
         [HttpGet]
@@ -37,7 +39,7 @@ namespace BackendDev.Controllers
         }
         [HttpGet]
         [Route("{page}")]
-        public async Task<ActionResult<MoviesPagedListModel>> GetMoviesPage(int page)
+        public ActionResult<MoviesPagedListModel> GetMoviesPage(int page)
         {
             try
             {
@@ -54,5 +56,46 @@ namespace BackendDev.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("/film/add")]
+        public async Task<IActionResult> AddFilm([FromBody] MovieDetailsModel movieDetailsModelDTO)
+        {
+            try
+            {
+             await _manageFilmService.AddFilm(movieDetailsModelDTO);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Добавить логирование
+                return StatusCode(500, "Errors during adding user");
+            }
+           
+        }
+
+        [HttpPost]
+        [Route("/genre/add")]
+        public async Task<IActionResult> AddGenre([FromBody] GenreModel genreModelDTO)
+        {
+            try
+            {
+                await _manageFilmService.AddGenre(genreModelDTO);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
+            catch (Exception ex)
+            {
+                // TODO: Добавить логирование
+                return StatusCode(500, "Errors during adding user");
+            }
+
+        }
     }
 }

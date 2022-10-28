@@ -20,5 +20,24 @@ namespace BackendDev.Data.Models
         public List<GenreModelBd> MovieGenres { get; set; } = new List<GenreModelBd>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
         
+        public MovieModel(MovieDetailsModel movieDetailsModelDTO)
+        {
+            Name = movieDetailsModelDTO.Name;
+            Poster = movieDetailsModelDTO.Poster;   
+            Description = movieDetailsModelDTO.Description;
+            Year = movieDetailsModelDTO.Year;
+            Country = movieDetailsModelDTO.Country;
+            Time = movieDetailsModelDTO.Time;
+            Tagline = movieDetailsModelDTO.Tagline;
+            Director = movieDetailsModelDTO.Director;
+            Budget = movieDetailsModelDTO.Budget;
+            Fees = movieDetailsModelDTO.Fees;
+            AgeLimit = movieDetailsModelDTO.AgeLimit;
+
+        }
+        public MovieModel()
+        {
+
+        }
     }
 }
