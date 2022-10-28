@@ -19,6 +19,6 @@ namespace BackendDev.Data.Models
         public List<UserModel> UserMovies { get; set; } = new List<UserModel>();
         public List<GenreModel> MovieGenres { get; set; } = new List<GenreModel>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
-     
+        
     }
 }

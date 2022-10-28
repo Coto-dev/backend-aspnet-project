@@ -37,7 +37,7 @@ namespace BackendDev.Controllers
         }
         [HttpGet]
         [Route("{page}")]
-        public async Task<ActionResult<MovieDetailsModel>> GetMoviesPage(int page)
+        public async Task<ActionResult<MoviesPagedListModel>> GetMoviesPage(int page)
         {
             return Ok();
         }
