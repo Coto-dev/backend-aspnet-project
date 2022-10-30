@@ -25,7 +25,7 @@ namespace BackendDev.Controllers
         {
             try
             {
-                await _reviewService.AddReview(reviewModifyModel, movieId);
+                await _reviewService.AddReviewToMovie(movieId, reviewModifyModel);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -47,7 +47,7 @@ namespace BackendDev.Controllers
         {
             try
             {
-                await _reviewService.EditReview(reviewModifyModel, movieId, reviewId);
+                await _reviewService.EditReview(movieId,reviewId, reviewModifyModel);
                 return Ok();
             }
             catch (ArgumentException e)
