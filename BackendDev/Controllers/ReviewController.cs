@@ -11,21 +11,21 @@ namespace BackendDev.Controllers
     public class ReviewController : ControllerBase
     {
         private IReviewService _reviewService;
-        private ILogger _logger;
-        public ReviewController(IReviewService reviewService, ILogger logger)
+        private ILogger<ReviewController> _logger;
+        public ReviewController(IReviewService reviewService, ILogger<ReviewController> logger)
         {
             _reviewService = reviewService;
             _logger = logger;
         }
 
         [HttpPost]
-        [Route("{moveId}/review/add")]
+        [Route("{movieId}/review/add")]
         [Authorize]
-        public async Task<IActionResult> AddReviewToMovie(Guid movieId, [FromBody] ReviewModifyModel reviewModifyModel)
+        public async Task<IActionResult> AddReviewToMovie(Guid movieId, [FromBody]ReviewModifyModel reviewModifyModel)
         {
             try
             {
-                await _reviewService.AddReviewToMovie(movieId, reviewModifyModel);
+                await _reviewService.AddReviewToMovie(movieId, reviewModifyModel, User.Identity.Name);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -41,13 +41,13 @@ namespace BackendDev.Controllers
         }
 
         [HttpPut]
-        [Route("{moveId}/review/{id}/edit")]
+        [Route("{movieId}/review/{id}/edit")]
         [Authorize]
-        public async Task<IActionResult> EditReview(Guid movieId,Guid reviewId ,[FromBody] ReviewModifyModel reviewModifyModel)
+        public async Task<IActionResult> EditReview(Guid movieId,Guid id, [FromBody] ReviewModifyModel reviewModifyModel)
         {
             try
             {
-                await _reviewService.EditReview(movieId,reviewId, reviewModifyModel);
+                await _reviewService.EditReview(movieId, id, reviewModifyModel, User.Identity.Name);
                 return Ok();
             }
             catch (ArgumentException e)
@@ -63,13 +63,13 @@ namespace BackendDev.Controllers
         }
 
         [HttpDelete]
-        [Route("{moveId}/review/{id}/delete")]
+        [Route("{movieId}/review/{id}/delete")]
         [Authorize]
-        public async Task<IActionResult> DeleteReview(Guid movieId, Guid reviewId)
+        public async Task<IActionResult> DeleteReview(Guid movieId, Guid id)
         {
             try
             {
-                await _reviewService.DeleteReview(movieId, reviewId);
+                await _reviewService.DeleteReview(movieId, id, User.Identity.Name);
                 return Ok();
             }
             catch (ArgumentException e)

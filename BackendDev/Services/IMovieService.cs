@@ -21,7 +21,7 @@ namespace BackendDev.Services
         }
        public async Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id)
         {
-            var modelDTO = new MovieDetailsModel(await _contextData.MovieModels.Where(x => x.Id == Id).Include(x=>x.MovieGenres).Include(x=>x.Reviews).FirstOrDefaultAsync());
+            var modelDTO = new MovieDetailsModel(await _contextData.MovieModels.Where(x => x.Id == Id).Include(x=>x.MovieGenres).Include(x=>x.Reviews).ThenInclude(x=>x.User).FirstOrDefaultAsync());
             if (modelDTO != null)
             return modelDTO;
             else throw new ArgumentException("Фильм с таким Id не существует");
