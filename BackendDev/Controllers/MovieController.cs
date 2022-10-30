@@ -13,30 +13,14 @@ namespace BackendDev.Controllers
     {
         private IMovieService _movieService;
         private IManageFilmsService _manageFilmService;
-        public MovieController(IMovieService movieservice, IManageFilmsService manageFilmsService)
+        private ILogger<MovieController> _logger;
+        public MovieController(IMovieService movieservice, IManageFilmsService manageFilmsService, ILogger<MovieController> logger)
         {
             _movieService = movieservice;
             _manageFilmService = manageFilmsService;
+            _logger = logger;
+        }
 
-        }
-        [HttpGet]
-        [Route("details/{id}")]
-        public  ActionResult<MovieDetailsModel> GetMvoieDetails(string Id)
-        {
-            try
-            {
-                return Ok(_movieService.GetMovieDetails(Id));
-            }
-            catch (ArgumentException e)
-            {
-                return Problem(e.Message);
-            }
-            catch (Exception ex)
-            {
-                // TODO: Добавить логирование
-                return StatusCode(500, "Errors during adding user");
-            }
-        }
         [HttpGet]
         [Route("{page}")]
         public ActionResult<MoviesPagedListModel> GetMoviesPage(int page)
@@ -51,13 +35,33 @@ namespace BackendDev.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: Добавить логирование
-                return StatusCode(500, "Errors during adding user");
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Errors during getting MoviesPagedListModel");
             }
         }
 
+        [HttpGet]
+        [Route("details/{id}")]
+        public async Task<ActionResult<MovieDetailsModel>> GetMvoieDetails(Guid id)
+        {
+            try
+            {
+                return Ok(await _movieService.GetMovieDetails(id));
+            }
+            catch (ArgumentException e)
+            {
+                return Problem(e.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Errors during getting MovieDetailsModel");
+            }
+        }
+        
+
         [HttpPost]
-        [Route("/film/add")]
+        [Route("film/add")]
         public async Task<IActionResult> AddFilm([FromBody] MovieDetailsModel movieDetailsModelDTO)
         {
             try
@@ -71,14 +75,14 @@ namespace BackendDev.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: Добавить логирование
-                return StatusCode(500, "Errors during adding user");
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Errors during adding film");
             }
            
         }
 
         [HttpPost]
-        [Route("/genre/add")]
+        [Route("genre/add")]
         public async Task<IActionResult> AddGenre([FromBody] GenreModel genreModelDTO)
         {
             try
@@ -92,10 +96,18 @@ namespace BackendDev.Controllers
             }
             catch (Exception ex)
             {
-                // TODO: Добавить логирование
-                return StatusCode(500, "Errors during adding user");
+                _logger.LogError(ex.Message);
+                return StatusCode(500, "Errors during adding genre");
             }
 
         }
+        [HttpPost]
+        [Route("addGenre/{genreId}/toMovie/{movieId}")]
+        public async Task<IActionResult> AddGenreToMovie(Guid genreId, Guid movieId)
+        {
+            await _manageFilmService.AddGenreToFilm(genreId, movieId);
+            return Ok();
+        }
+
     }
 }

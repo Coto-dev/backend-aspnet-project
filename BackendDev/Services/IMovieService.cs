@@ -2,12 +2,13 @@
 using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendDev.Services
 {
   public  interface IMovieService
     {
-        public MovieDetailsModel GetMovieDetails(string Id);
+        public Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id);
         public MoviesPagedListModel GetMoviePage(int Page);
 
         }
@@ -18,17 +19,9 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-       public MovieDetailsModel GetMovieDetails(string Id)
+       public async Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id)
         {
-            MovieDetailsModel modelDTO = null;
-            foreach (MovieModel movieDetails in _contextData.MovieModels)
-            {
-                if (Id == movieDetails.Id.ToString())
-                {
-                    modelDTO = new MovieDetailsModel(movieDetails);
-                  
-                }
-            }
+            var modelDTO = new MovieDetailsModel(await _contextData.MovieModels.Where(x => x.Id == Id).Include(x=>x.MovieGenres).Include(x=>x.Reviews).FirstOrDefaultAsync());
             if (modelDTO != null)
             return modelDTO;
             else throw new ArgumentException("Фильм с таким Id не существует");
@@ -43,9 +36,9 @@ namespace BackendDev.Services
                 pageCount = AmountFilms / pageSize;
             else
                 pageCount = (AmountFilms / pageSize) + 1;
-            PageInfoModel pageInfo = new PageInfoModel(pageSize, pageCount, Page);
-            List<MovieModel> moviesList = _contextData.MovieModels.ToList();
-            List<List<MovieModel>> movies = Spliter.Split(moviesList,pageCount);
+                PageInfoModel pageInfo = new PageInfoModel(pageSize, pageCount, Page);
+            List<MovieModel> moviesList = _contextData.MovieModels.Include(x => x.MovieGenres).Include(x => x.Reviews).ToList();
+            List<List<MovieModel>> movies = Spliter.Split(moviesList,pageSize);
             var movieElementModels = movies[Page -1].Select(x => new MovieElementModel(x)).ToList();
             try
             {

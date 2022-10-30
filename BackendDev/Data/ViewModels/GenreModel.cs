@@ -17,6 +17,9 @@ namespace BackendDev.Data.ViewModels
             Id = modelDb.Id;
             Name = modelDb.Name;
         }
-       
+       public GenreModel()
+        {
+
+        }
     }
 }

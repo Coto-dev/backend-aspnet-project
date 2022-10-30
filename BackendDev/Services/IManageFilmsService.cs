@@ -1,6 +1,8 @@
-﻿using BackendDev.Data.Models;
+﻿using System.Linq;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendDev.Services
 {
@@ -8,7 +10,7 @@ namespace BackendDev.Services
     {
         public Task AddFilm(MovieDetailsModel movieDetailsModelDTO);
         public Task AddGenre(GenreModel GenreModelDto);
-        public Task AddGenreToFilm(string IdFilm , string IdGenre);
+        public Task AddGenreToFilm(Guid IdFilm, Guid IdGenre);
 
 
     }
@@ -33,18 +35,32 @@ namespace BackendDev.Services
             await _contextData.SaveChangesAsync();
             
         }
-        public async Task AddGenreToFilm(string IdFilm, string IdGenre)
+        public async Task AddGenreToFilm(Guid IdGenre, Guid IdFilm)
         {
-
+            var movieDb = await _contextData.MovieModels.FirstOrDefaultAsync(x=>x.Id == IdFilm);
+            if (movieDb != null)
+            {
+                //_contextData.Entry(movieDb).State = EntityState.Modified;
+                var GenreToFilm = await _contextData.Genres.FirstOrDefaultAsync(x => x.Id == IdGenre);
+                if (GenreToFilm != null)
+                {
+                    movieDb.MovieGenres.Add(GenreToFilm);
+                  //  _contextData.Entry(GenreToFilm).State = EntityState.Modified;
+                    await _contextData.SaveChangesAsync();
+                }
+                else
+                    throw new ArgumentException("не удалось найти жанр с таким id");
+                
+            }
+            else
+                throw new ArgumentException("не удалось найти фильм с таким id");
+            
         }
         public async Task AddGenre(GenreModel GenreModelDto)
         {
-            foreach (GenreModelBd GenreDb in _contextData.Genres)
+            if (_contextData.Genres.Any(x=>x.Name == GenreModelDto.Name))
             {
-                if (GenreDb.Name == GenreModelDto.Name)
-                {
-                    throw new ArgumentException("такой жанр уже существует");
-                }
+                throw new ArgumentException("такой жанр уже существует");
             }
 
             await _contextData.Genres.AddAsync(new GenreModelBd(GenreModelDto));
