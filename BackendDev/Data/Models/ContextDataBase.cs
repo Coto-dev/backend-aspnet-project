@@ -5,7 +5,7 @@ namespace BackendDev.Data.Models
     public class ContextDataBase : DbContext
     {
         public DbSet<UserModel> Users { get; set; }
-        public DbSet<GenreModel> Genres { get; set; }
+        public DbSet<GenreModelBd> Genres { get; set; }
         public DbSet<MovieModel> MovieModels { get; set; }
         public DbSet<ReviewModelBd> ReviewModels { get; set; }
         public DbSet<InvalidToken> InvalidTokens { get; set; }

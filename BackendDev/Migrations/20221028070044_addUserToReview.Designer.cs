@@ -4,6 +4,7 @@ using BackendDev.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendDev.Migrations
 {
     [DbContext(typeof(ContextDataBase))]
-    partial class ContextDataBaseModelSnapshot : ModelSnapshot
+    [Migration("20221028070044_addUserToReview")]
+    partial class addUserToReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,13 +24,14 @@ namespace BackendDev.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("BackendDev.Data.Models.GenreModelBd", b =>
+            modelBuilder.Entity("BackendDev.Data.Models.GenreModel", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -172,7 +175,7 @@ namespace BackendDev.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("GenreModelBdMovieModel", b =>
+            modelBuilder.Entity("GenreModelMovieModel", b =>
                 {
                     b.Property<Guid>("MovieGenresId")
                         .HasColumnType("uniqueidentifier");
@@ -184,7 +187,7 @@ namespace BackendDev.Migrations
 
                     b.HasIndex("MovieGenresId1");
 
-                    b.ToTable("GenreModelBdMovieModel");
+                    b.ToTable("GenreModelMovieModel");
                 });
 
             modelBuilder.Entity("MovieModelUserModel", b =>
@@ -217,9 +220,9 @@ namespace BackendDev.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GenreModelBdMovieModel", b =>
+            modelBuilder.Entity("GenreModelMovieModel", b =>
                 {
-                    b.HasOne("BackendDev.Data.Models.GenreModelBd", null)
+                    b.HasOne("BackendDev.Data.Models.GenreModel", null)
                         .WithMany()
                         .HasForeignKey("MovieGenresId")
                         .OnDelete(DeleteBehavior.Cascade)
