@@ -28,20 +28,39 @@ namespace BackendDev.Services
             {
                  var reviewModel = new ReviewModelBd(reviewModifyModelDTO, user);
                 var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
-                movie.Reviews.Add(reviewModel);
+                if (movie != null)
+                {
+                    movie.Reviews.Add(reviewModel);
+                    await _contextData.ReviewModels.AddAsync(reviewModel);
+                    await _contextData.SaveChangesAsync();
+                }
+                else throw new ArgumentException("фильма с таким id не существует");
                 /*_contextData.Entry(movie).State = EntityState.Modified;
                 _contextData.Entry(reviewModel).State = EntityState.Modified;*/
-                await _contextData.ReviewModels.AddAsync(reviewModel);
-                await _contextData.SaveChangesAsync();
             }
-               
-            else throw new ArgumentException("Такой пользователя не существует");
+
+            else throw new ArgumentException("Такого пользователя не существует");
             
            
         }
         public async Task EditReview(Guid movieId, Guid reviewId, ReviewModifyModel reviewModifyModelDTO, string UserName)
         {
-            
+            var user = _contextData.Users.Where(x => x.UserName == UserName).FirstOrDefault();
+            if (user != null)
+            {
+                var reviewModel = new ReviewModelBd(reviewId,reviewModifyModelDTO, user);
+                var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
+                if (movie != null)
+                {
+                   _contextData.Update(reviewModel);
+                   _contextData.ReviewModels.Update(reviewModel);
+                    await _contextData.SaveChangesAsync();
+                }
+                else throw new ArgumentException("фильма с таким id не существует");
+
+            }
+
+            else throw new ArgumentException("Такого пользователя не существует");
         }
 
         public async Task DeleteReview(Guid movieId, Guid reviewIdDTO, string UserName)

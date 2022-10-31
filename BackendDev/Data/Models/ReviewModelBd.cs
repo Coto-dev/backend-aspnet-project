@@ -33,6 +33,15 @@ namespace BackendDev.Data.Models
             CreateDateTime = DateTime.Now.ToString();
             User = user;
         }
+        public ReviewModelBd(Guid reviewId, ReviewModifyModel reviewModelDTO, UserModel user)
+        {
+            Id=reviewId;
+            ReviewText = reviewModelDTO.ReviewText;
+            Rating = reviewModelDTO.Rating;
+            isAnonymous = reviewModelDTO.isAnonymous;
+            CreateDateTime = DateTime.Now.ToString();
+            User = user;
+        }
         public ReviewModelBd()
         {
 
