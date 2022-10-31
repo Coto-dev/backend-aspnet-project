@@ -40,7 +40,7 @@ namespace BackendDev.Controllers
         [HttpPost]
         [Authorize]
         [Route("{id}/add")]
-        public async Task<IActionResult> AddFavourite(Guid id)
+        public async Task<IActionResult> AddFavorite(Guid id)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace BackendDev.Controllers
                 return StatusCode(500, "Errors during adding Favorite Film");
             }
         }
-        [HttpPost]
+        [HttpDelete]
         [Authorize]
         [Route("{id}/delete")]
         public async Task<IActionResult> DeleteFavorite(Guid id)
