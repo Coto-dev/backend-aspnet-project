@@ -1,6 +1,6 @@
 ﻿namespace BackendDev.Data.ViewModels
 {
-    public class MovesListModel
+    public class MoviesListModel
     {
         public MovieElementModel? movies { get; set; }
     }

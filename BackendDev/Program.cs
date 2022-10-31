@@ -18,6 +18,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IManageFilmsService, ManageFilmsService>();
+builder.Services.AddScoped<IFavoriteMoviesService, FavoriteMoviesService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
