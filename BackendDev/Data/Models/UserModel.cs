@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using BackendDev.Data.ViewModels;
+using Microsoft.AspNetCore.SignalR;
 using System.ComponentModel.DataAnnotations;
 namespace BackendDev.Data.Models
 {
@@ -20,6 +21,19 @@ namespace BackendDev.Data.Models
         public Gender Gender { get; set; }
         public List<MovieModel> UserMovies { get; set; }  = new List<MovieModel>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
+        public UserModel(UserRegisterModel modelDTO)
+        {
+            UserName = modelDTO.UserName;
+            Name = modelDTO.Name;
+            Password = modelDTO.Password;
+            Email = modelDTO.Email;
+            BirthDate = modelDTO.BirthDate;
+            Gender = modelDTO.Gender;
+        }
+        public UserModel()
+        {
+
+        }
     }
 
 }

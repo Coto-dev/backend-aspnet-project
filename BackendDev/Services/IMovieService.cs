@@ -11,7 +11,7 @@ namespace BackendDev.Services
         public Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id);
         public MoviesPagedListModel GetMoviePage(int Page);
 
-        }
+    }
     public class MovieService : IMovieService
     {
         private readonly ContextDataBase _contextData;

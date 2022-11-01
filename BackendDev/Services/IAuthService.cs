@@ -11,7 +11,7 @@ namespace BackendDev.Services
 {
     public interface IAuthService
     {
-        /*UserRegisterModel[] GetUserRegisterModel();*/
+        
         Task Add(UserRegisterModel RegisterModelDto);
         Task<IActionResult> Login(LoginCredentials LoginDto);
         Task Logout(HttpRequest httpRequest);
@@ -24,18 +24,7 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-       /* public UserRegisterModel[] GetUserRegisterModel()
-        {
-            return _contextData.Users.Select(x=> new UserRegisterModel
-            {
-                UserName = x.UserName,
-                Name = x.Name,
-                Password = x.Password,
-                Email = x.Email,
-                BirthDate = x.BirthDate,
-                Gender = x.Gender,
-            }).ToArray();
-        }*/
+      
         public async Task Add(UserRegisterModel RegisterModelDto)
         {
             foreach (UserModel user in _contextData.Users){
@@ -44,15 +33,7 @@ namespace BackendDev.Services
                     throw new ArgumentException("Такой пользователь уже существует");
                 }
             }
-            await _contextData.Users.AddAsync(new UserModel
-            {
-                UserName = RegisterModelDto.UserName,
-                Name = RegisterModelDto.UserName,
-                Password = RegisterModelDto.Password,
-                Email = RegisterModelDto.Email,
-                BirthDate = RegisterModelDto.BirthDate,
-                Gender = RegisterModelDto.Gender,
-            });
+            await _contextData.Users.AddAsync(new UserModel(RegisterModelDto));
             await _contextData.SaveChangesAsync();
         }
         public async Task<IActionResult> Login(LoginCredentials LoginDto)
@@ -77,7 +58,7 @@ namespace BackendDev.Services
             var response = new
             {
                 token = encodedJwt,
-                username =  identity.Name
+               // username =  identity.Name
             };
 
             return new JsonResult(response);
