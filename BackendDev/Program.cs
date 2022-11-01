@@ -22,6 +22,13 @@ builder.Services.AddScoped<IFavoriteMoviesService, FavoriteMoviesService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
+{
+    builder.WithOrigins("http://127.0.0.1:5500")
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
+
 builder.Services.AddDbContext<ContextDataBase>(options => options.UseSqlServer(connection));
 
 builder.Services.AddAuthorization();
@@ -69,7 +76,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("MyPolicy");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

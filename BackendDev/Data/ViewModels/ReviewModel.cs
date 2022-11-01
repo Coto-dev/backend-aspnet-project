@@ -8,9 +8,9 @@ namespace BackendDev.Data.ViewModels
         public int Rating { get; set; }
         public string? ReviewText { get; set; }
         public bool IsAnonymous { get; set; }
-        public string CreateDateTime { get; set; }
+        public DateTime CreateDateTime { get; set; }
         public UserShortModel Author { get; set; }
-        public ReviewModel(string id, int rating, string? reviewText, bool isAnonymous, string createDateTime, UserShortModel author)
+        public ReviewModel(string id, int rating, string? reviewText, bool isAnonymous, DateTime createDateTime, UserShortModel author)
         {
             Id = id;
             Rating = rating;

@@ -6,7 +6,7 @@ namespace BackendDev.Data.Models
     public class UserModel
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         public string BirthDate { get; set; }
         public string? UserName { get; set; }
         [Required(ErrorMessage = "Не указано имя пользователя")]

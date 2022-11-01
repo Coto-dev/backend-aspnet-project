@@ -7,7 +7,7 @@ namespace BackendDev.Services
 {
     public interface IFavoriteMoviesService
     {
-        public ActionResult<MoviesListModel> GetMoviesList(string userName);
+        public MoviesListModel GetMoviesList(string userName);
         public Task AddFavorite(string userName,Guid id);
         public Task DeleteFavorite(string userName,Guid id);
     }
@@ -18,7 +18,7 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-        public  ActionResult<MoviesListModel> GetMoviesList(string userName)
+        public  MoviesListModel GetMoviesList(string userName)
         {
            var user =  _contextData.Users.Where(x => x.UserName == userName).Include(x=>x.UserMovies).ThenInclude(x=>x.MovieGenres).Include(x=>x.UserMovies).ThenInclude(x => x.Reviews).FirstOrDefault();
             if (user != null)
