@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using BackendDev.Data.ViewModels;
+using Microsoft.AspNetCore.SignalR;
 using System.ComponentModel.DataAnnotations;
 namespace BackendDev.Data.Models
 {
     public class UserModel
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.Date)]
         public string BirthDate { get; set; }
         public string? UserName { get; set; }
         [Required(ErrorMessage = "Не указано имя пользователя")]
@@ -20,6 +21,19 @@ namespace BackendDev.Data.Models
         public Gender Gender { get; set; }
         public List<MovieModel> UserMovies { get; set; }  = new List<MovieModel>();
         public List<ReviewModelBd> Reviews { get; set; } = new List<ReviewModelBd>();
+        public UserModel(UserRegisterModel modelDTO)
+        {
+            UserName = modelDTO.UserName;
+            Name = modelDTO.Name;
+            Password = modelDTO.Password;
+            Email = modelDTO.Email;
+            BirthDate = modelDTO.BirthDate;
+            Gender = modelDTO.Gender;
+        }
+        public UserModel()
+        {
+
+        }
     }
 
 }

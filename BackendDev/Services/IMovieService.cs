@@ -8,10 +8,10 @@ namespace BackendDev.Services
 {
   public  interface IMovieService
     {
-        public Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id);
+        public Task<MovieDetailsModel> GetMovieDetails(Guid Id);
         public MoviesPagedListModel GetMoviePage(int Page);
 
-        }
+    }
     public class MovieService : IMovieService
     {
         private readonly ContextDataBase _contextData;
@@ -19,7 +19,7 @@ namespace BackendDev.Services
         {
             _contextData = contextData;
         }
-       public async Task<ActionResult<MovieDetailsModel>> GetMovieDetails(Guid Id)
+       public async Task<MovieDetailsModel> GetMovieDetails(Guid Id)
         {
             var modelDTO = new MovieDetailsModel(await _contextData.MovieModels.Where(x => x.Id == Id).Include(x=>x.MovieGenres).Include(x=>x.Reviews).ThenInclude(x=>x.User).FirstOrDefaultAsync());
             if (modelDTO != null)

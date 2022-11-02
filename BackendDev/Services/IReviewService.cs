@@ -40,15 +40,14 @@ namespace BackendDev.Services
             }
 
             else throw new ArgumentException("Такого пользователя не существует");
-            
-           
+
         }
         public async Task EditReview(Guid movieId, Guid reviewId, ReviewModifyModel reviewModifyModelDTO, string UserName)
         {
             var user = _contextData.Users.Where(x => x.UserName == UserName).FirstOrDefault();
             if (user != null)
             {
-                var reviewModel = new ReviewModelBd(reviewId,reviewModifyModelDTO, user);
+                var reviewModel = new ReviewModelBd(reviewId, reviewModifyModelDTO, user);
                 var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
                 if (movie != null)
                 {
@@ -65,7 +64,20 @@ namespace BackendDev.Services
 
         public async Task DeleteReview(Guid movieId, Guid reviewIdDTO, string UserName)
         {
+            var movie = _contextData.MovieModels.Where(x => x.Id == movieId).Include(x => x.UserMovies).ThenInclude(x => x.Reviews).FirstOrDefault();
+            if (movie != null)
+            {
+                var review = await _contextData.ReviewModels.Where(x => x.Id == reviewIdDTO).FirstOrDefaultAsync();
+                if (review != null)
+                {
+                    _contextData.ReviewModels.Remove(review);
+                     movie.Reviews.Remove(review);
+                    await _contextData.SaveChangesAsync();
+                }
 
+                else throw new ArgumentException("такого фильма не существует");
+            }
+            else throw new ArgumentException("такого пользователя не существует");
         }
 
         public Task<Boolean> CheckToken(HttpRequest httpRequest)

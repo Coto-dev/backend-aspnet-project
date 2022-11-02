@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using BackendDev.Services;
@@ -40,12 +41,14 @@ namespace BackendDev.Controllers
 
             try
             {
-                await _authService.Add(RegisterModelDto);
-                return Ok();
+                var response = await _authService.Add(RegisterModelDto);
+                if (response != null)
+                    return Ok(response.Value);
+                else return BadRequest(new { errorText = "Invalid username or password." });
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
@@ -55,7 +58,7 @@ namespace BackendDev.Controllers
         }
         [HttpPost]
         [Route("login")]
-        public  async Task<IActionResult> Token([FromBody]LoginCredentials LoginDto)
+        public IActionResult Login([FromBody]LoginCredentials LoginDto)
         {
             if (!ModelState.IsValid) //Проверка полученной модели данных
             {
@@ -64,9 +67,9 @@ namespace BackendDev.Controllers
 
             try
             {
-                var response = await _authService.Login(LoginDto);
+                var response = _authService.Login(LoginDto);
                 if (response!= null)
-                return Ok(response);
+                return Ok(response.Value);
                 else return BadRequest(new { errorText = "Invalid username or password." });
 
             }

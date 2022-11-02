@@ -27,7 +27,7 @@ namespace BackendDev.Controllers
         {
             try
             {
-                return Ok(_movieService.GetMoviePage(page));
+                return Ok((_movieService.GetMoviePage(page)));
             }
             catch (ArgumentException e)
             {
@@ -46,7 +46,7 @@ namespace BackendDev.Controllers
         {
             try
             {
-                return Ok(await _movieService.GetMovieDetails(id));
+                return Ok((await _movieService.GetMovieDetails(id)));
             }
             catch (ArgumentException e)
             {
