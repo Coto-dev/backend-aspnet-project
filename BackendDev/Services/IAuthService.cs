@@ -8,6 +8,7 @@ using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using XSystem.Security.Cryptography;
 
 namespace BackendDev.Services
 {
@@ -31,6 +32,7 @@ namespace BackendDev.Services
 
         public JsonResult Login(LoginCredentials LoginDto)
         {
+            LoginDto.Password = GetHashPasword(LoginDto.Password);
            return Token(LoginDto);
         }
 
@@ -39,7 +41,8 @@ namespace BackendDev.Services
             if (await _contextData.Users.FirstOrDefaultAsync(x => x.UserName == RegisterModelDto.UserName) == null)
             {
                 if (await _contextData.Users.FirstOrDefaultAsync(x => x.Email == RegisterModelDto.Email) == null)
-                {
+                {   
+                    RegisterModelDto.Password = GetHashPasword(RegisterModelDto.Password);
                     await _contextData.Users.AddAsync(new UserModel(RegisterModelDto));
                     await _contextData.SaveChangesAsync();
                     return Token(new LoginCredentials(RegisterModelDto));
@@ -47,6 +50,12 @@ namespace BackendDev.Services
                 else throw new ArgumentException("Пользователь с такой почтой уже существует");
             }
             else throw new ArgumentException("Пользователь с таким UserName уже существует");
+        }
+        public static string GetHashPasword(string password)
+        {
+            var Bytes = ASCIIEncoding.ASCII.GetBytes(password);
+            var Hash = new MD5CryptoServiceProvider().ComputeHash(Bytes);
+            return Encoding.UTF8.GetString(Hash);
         }
 
         public JsonResult Token(LoginCredentials model)
