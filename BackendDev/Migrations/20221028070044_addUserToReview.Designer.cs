@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendDev.Migrations
 {
     [DbContext(typeof(ContextDataBase))]
-    [Migration("20221020080051_fixUserModel")]
-    partial class fixUserModel
+    [Migration("20221028070044_addUserToReview")]
+    partial class addUserToReview
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,21 @@ namespace BackendDev.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("BackendDev.Data.Models.InvalidToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("JWTToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvalidTokens");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.MovieModel", b =>
@@ -103,7 +118,7 @@ namespace BackendDev.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserModelId")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("isAnonymous")
@@ -113,7 +128,7 @@ namespace BackendDev.Migrations
 
                     b.HasIndex("MovieModelId");
 
-                    b.HasIndex("UserModelId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ReviewModels");
                 });
@@ -147,6 +162,9 @@ namespace BackendDev.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
@@ -193,9 +211,13 @@ namespace BackendDev.Migrations
                         .WithMany("Reviews")
                         .HasForeignKey("MovieModelId");
 
-                    b.HasOne("BackendDev.Data.Models.UserModel", null)
+                    b.HasOne("BackendDev.Data.Models.UserModel", "User")
                         .WithMany("Reviews")
-                        .HasForeignKey("UserModelId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GenreModelMovieModel", b =>

@@ -1,5 +1,5 @@
 using BackendDev;
-using BackendDev.Data.Models;
+using BackendDev.Data;
 using BackendDev.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,12 +14,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IManageFilmsService, ManageFilmsService>();
+builder.Services.AddScoped<IFavoriteMoviesService, FavoriteMoviesService>();
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddCors(options => options.AddPolicy("MyPolicy", builder =>
+{
+    builder.WithOrigins("http://127.0.0.1:5500")
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+}));
 
 builder.Services.AddDbContext<ContextDataBase>(options => options.UseSqlServer(connection));
 
 builder.Services.AddAuthorization();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -63,7 +76,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors("MyPolicy");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

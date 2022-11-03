@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.SqlTypes;
+using BackendDev.Data.ViewModels;
 
 namespace BackendDev.Data.Models
 {
-    public class ReviewModelBd
+    public class ReviewModelBd//film to review , review to user
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         [Required(ErrorMessage = "Пустое поле отзыва")]
@@ -12,6 +14,34 @@ namespace BackendDev.Data.Models
         public int Rating { get; set; }
         public bool isAnonymous { get; set; }
         [DataType(DataType.DateTime)]
-        public string CreateDateTime { get; set; }
+        public DateTime CreateDateTime = DateTime.Now;
+        [Required]
+        public UserModel User { get; set; }
+
+        public void updateModel(ReviewModifyModel reviewModelDTO)
+        {
+            ReviewText = reviewModelDTO.ReviewText;
+            Rating = reviewModelDTO.Rating;
+            isAnonymous = reviewModelDTO.isAnonymous;
+        }
+        public ReviewModelBd(ReviewModifyModel reviewModelDTO, UserModel user)
+        {
+            ReviewText = reviewModelDTO.ReviewText;
+            Rating = reviewModelDTO.Rating;
+            isAnonymous = reviewModelDTO.isAnonymous;
+            User = user;
+        }
+        public ReviewModelBd(Guid reviewId, ReviewModifyModel reviewModelDTO, UserModel user)
+        {
+            Id=reviewId;
+            ReviewText = reviewModelDTO.ReviewText;
+            Rating = reviewModelDTO.Rating;
+            isAnonymous = reviewModelDTO.isAnonymous;
+            User = user;
+        }
+        public ReviewModelBd()
+        {
+
+        }
     }
 }

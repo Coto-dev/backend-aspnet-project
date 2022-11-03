@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackendDev.Migrations
 {
     [DbContext(typeof(ContextDataBase))]
-    [Migration("20221020080051_fixUserModel")]
-    partial class fixUserModel
+    [Migration("20221022164644_addInvalidTokens")]
+    partial class addInvalidTokens
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -37,6 +37,21 @@ namespace BackendDev.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("BackendDev.Data.Models.InvalidToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("JWTToken")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InvalidTokens");
                 });
 
             modelBuilder.Entity("BackendDev.Data.Models.MovieModel", b =>
@@ -147,6 +162,9 @@ namespace BackendDev.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
