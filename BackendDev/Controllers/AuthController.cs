@@ -45,7 +45,7 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return BadRequest(e.Message);
+                return Problem(statusCode: 400,title: e.Message);
             }
             catch (Exception ex)
             {
@@ -82,7 +82,7 @@ namespace BackendDev.Controllers
            
         }
 
-       
+      /* 
 
         [HttpGet]
         [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
@@ -93,15 +93,15 @@ namespace BackendDev.Controllers
             if (TokenIsValid)
             return Ok($"Ваш логин: {User.Identity.Name}");
             else return BadRequest(new { errorText = "Invalid token" });
-        }
+        }*/
 
-      /*  [HttpGet]
+       /* [HttpGet]
         [Authorize(Roles = "admin")]
         [Route("test_admin")]
         public IActionResult TestAdmin()
         {
             return Ok($"Ваш логин: {User.Identity.Name}");
-        }
+        }*/
 
 
         [HttpPost]
@@ -110,8 +110,8 @@ namespace BackendDev.Controllers
         public async Task<IActionResult> Logout()
         {
             await _authService.Logout(Request);
-           return Ok();
+            return Ok();
 
-        }*/
+        }
     }
 }

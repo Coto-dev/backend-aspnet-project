@@ -27,7 +27,8 @@ namespace BackendDev.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var TokenIsValid = await _reviewService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _reviewService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
@@ -44,9 +45,6 @@ namespace BackendDev.Controllers
                     _logger.LogError(ex.Message);
                     return StatusCode(500, ex.Message);
                }
-            
-           
-         
         }
 
         [HttpPut]
@@ -58,7 +56,8 @@ namespace BackendDev.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var TokenIsValid = await _reviewService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _reviewService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
@@ -83,7 +82,8 @@ namespace BackendDev.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteReview(Guid movieId, Guid id)
         {
-            var TokenIsValid = await _reviewService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _reviewService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try

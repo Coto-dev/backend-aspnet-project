@@ -19,7 +19,7 @@ namespace BackendDev.Services
         public Task<JsonResult> Add(UserRegisterModel RegisterModelDto);
         public JsonResult Login(LoginCredentials LoginDto);
         public Task Logout(HttpRequest httpRequest);
-        public Task<Boolean> CheckToken(HttpRequest httpRequest);
+       // public Task<Boolean> CheckToken(HttpRequest httpRequest);
         public JsonResult Token(LoginCredentials LoginDto);
        
     }
@@ -107,7 +107,7 @@ namespace BackendDev.Services
             return claimsIdentity;
         }
 
-        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+      /*  public Task<Boolean> CheckToken(HttpRequest httpRequest)
         {
             var token = httpRequest.Headers["Authorization"];
             foreach (InvalidToken InvToken in _contextData.InvalidTokens)
@@ -119,7 +119,7 @@ namespace BackendDev.Services
                 else return Task.FromResult(true);
             }
             return Task.FromResult(true);
-        }
+        }*/
 
         public async Task Logout(HttpRequest httpRequest)
         {

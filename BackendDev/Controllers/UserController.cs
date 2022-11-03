@@ -26,7 +26,8 @@ namespace BackendDev.Controllers
         public async Task<ActionResult<ProfileModel>> GetProfile(){
 
 
-            var TokenIsValid = await _userservice.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _userservice.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
@@ -60,7 +61,8 @@ namespace BackendDev.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var TokenIsValid = await _userservice.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _userservice.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try

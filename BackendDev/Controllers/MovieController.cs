@@ -25,11 +25,11 @@ namespace BackendDev.Controllers
 
         [HttpGet]
         [Route("{page}")]
-        public ActionResult<MoviesPagedListModel> GetMoviesPage(int page)
+        public ActionResult<MoviesPagedListModel> GetMoviesPage(int? page=1)
         {
             try
             {
-                return Ok(_movieService.GetMoviePage(page));
+                return Ok(_movieService.GetMoviePage((int)page));
             }
             catch (ArgumentException e)
             {
@@ -71,6 +71,12 @@ namespace BackendDev.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _manageFilmService.CheckToken(token);
+
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
+
             try
             {
              await _manageFilmService.AddFilm(movieDetailsModelDTO);
@@ -93,6 +99,12 @@ namespace BackendDev.Controllers
         [Route("genre/add")]
         public async Task<IActionResult> AddGenre([FromBody] GenreModel genreModelDTO)
         {
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _manageFilmService.CheckToken(token);
+
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
+
             try
             {
                 await _manageFilmService.AddGenre(genreModelDTO);
@@ -114,6 +126,12 @@ namespace BackendDev.Controllers
         [Route("addGenre/{genreId}/toMovie/{movieId}")]
         public async Task<IActionResult> AddGenreToMovie(Guid genreId, Guid movieId)
         {
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _manageFilmService.CheckToken(token);
+
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
+
             await _manageFilmService.AddGenreToFilm(genreId, movieId);
             return Ok();
         }

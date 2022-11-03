@@ -8,7 +8,7 @@ namespace BackendDev.Services
 {
     public interface IReviewService
     {
-        Task<bool> CheckToken(HttpRequest httpRequest);
+        public  Task<bool> CheckToken(string token);
         public  Task AddReviewToMovie(Guid movieId, ReviewModifyModel reviewModifyModelDTO, string UserName);
         public Task EditReview(Guid movieId, Guid reviewId, ReviewModifyModel reviewModifyModelDTO, string UserName);
         public  Task DeleteReview(Guid movieId, Guid reviewIdDTO, string UserName);
@@ -36,8 +36,7 @@ namespace BackendDev.Services
                     await _contextData.SaveChangesAsync();
                 }
                 else throw new ArgumentException("фильма с таким id не существует");
-                /*_contextData.Entry(movie).State = EntityState.Modified;
-                _contextData.Entry(reviewModel).State = EntityState.Modified;*/
+
             }
 
             else throw new ArgumentException("Такого пользователя не существует");
@@ -53,25 +52,10 @@ namespace BackendDev.Services
             if (ReviewDb.User.UserName != UserName)
                 throw new ArgumentException("У вас нет прав на редактирование");
 
-            var user = await _contextData.Users.Where(x => x.UserName == UserName).FirstOrDefaultAsync();
-            if (user != null)
-            {
                 _contextData.Attach(ReviewDb);
                 ReviewDb.updateModel(reviewModifyModelDTO);
                 await _contextData.SaveChangesAsync();
-                // var reviewModel = new ReviewModelBd(reviewId, reviewModifyModelDTO, user);
-                /*  var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
-                  if (movie != null)
-                  {
-                     _contextData.Update(reviewModel);
-                     _contextData.ReviewModels.Update(reviewModel);
-                      await _contextData.SaveChangesAsync();
-                  }
-                  else throw new ArgumentException("фильма с таким id не существует");*/
 
-            }
-
-            else throw new ArgumentException("Такого пользователя не существует");
         }
 
         public async Task DeleteReview(Guid movieId, Guid reviewId, string UserName)
@@ -100,18 +84,13 @@ namespace BackendDev.Services
             else throw new ArgumentException("такого пользователя не существует");
         }
 
-        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+        public async Task<bool> CheckToken(string token)
         {
-            var token = httpRequest.Headers["Authorization"];
-            foreach (InvalidToken InvToken in _contextData.InvalidTokens)
-            {
-                if (InvToken.JWTToken == token)
-                {
-                    return Task.FromResult(false);
-                }
-                else return Task.FromResult(true);
-            }
-            return Task.FromResult(true);
+            var FindedToken = await _contextData.InvalidTokens.FirstOrDefaultAsync(x => x.JWTToken == token);
+            if (FindedToken != null)
+                return false;
+            else return true;
         }
+       
     }
 }

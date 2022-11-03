@@ -11,7 +11,7 @@ namespace BackendDev.Services
         public MoviesListModel GetMoviesList(string userName);
         public Task AddFavorite(string userName,Guid id);
         public Task DeleteFavorite(string userName,Guid id);
-        Task<bool> CheckToken(HttpRequest httpRequest);
+        public Task<bool> CheckToken(string token);
     }
     public class FavoriteMoviesService : IFavoriteMoviesService
     {
@@ -29,7 +29,7 @@ namespace BackendDev.Services
                 MoviesListModel moviesDTO = new MoviesListModel(movies);
                 return moviesDTO;
             }
-            else throw new ArgumentException("такого пользователя не существует");
+            else throw new ArgumentException("Не удалось найти такого пользователя");
         }
         public async Task AddFavorite(string userName, Guid id)
         {
@@ -62,18 +62,12 @@ namespace BackendDev.Services
             }
             else throw new ArgumentException("такого пользователя не существует");
         }
-        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+        public async Task<bool> CheckToken(string token)
         {
-            var token = httpRequest.Headers["Authorization"];
-            foreach (InvalidToken InvToken in _contextData.InvalidTokens)
-            {
-                if (InvToken.JWTToken == token)
-                {
-                    return Task.FromResult(false);
-                }
-                else return Task.FromResult(true);
-            }
-            return Task.FromResult(true);
+            var FindedToken = await _contextData.InvalidTokens.FirstOrDefaultAsync(x=>x.JWTToken == token);
+            if (FindedToken != null)
+                return false;
+            else return true;
         }
     }
 }

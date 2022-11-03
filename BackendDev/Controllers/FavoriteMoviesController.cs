@@ -23,7 +23,8 @@ namespace BackendDev.Controllers
         [Authorize]
         public async Task <ActionResult<MoviesListModel>> GetMoviesList()
         {
-            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
@@ -32,7 +33,7 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return BadRequest(e.Message);
+                return Problem(statusCode:404 , title: e.Message);
             }
             catch (Exception ex)
             {
@@ -45,7 +46,8 @@ namespace BackendDev.Controllers
         [Route("{id}/add")]
         public async Task<IActionResult> AddFavorite(Guid id)
         {
-            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
@@ -68,7 +70,8 @@ namespace BackendDev.Controllers
         [Route("{id}/delete")]
         public async Task<IActionResult> DeleteFavorite(Guid id)
         {
-            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            var token = Request.Headers["Authorization"];
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(token);
             if (!TokenIsValid)
                 return BadRequest("невалидный токен");
             try
