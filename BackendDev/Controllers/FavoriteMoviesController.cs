@@ -21,20 +21,23 @@ namespace BackendDev.Controllers
 
         [HttpGet]
         [Authorize]
-        public ActionResult<MoviesListModel> GetMoviesList()
+        public async Task <ActionResult<MoviesListModel>> GetMoviesList()
         {
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
             {
                 return Ok(_favoriteMoviesService.GetMoviesList(User.Identity.Name));
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return BadRequest(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during getting MoviesListModel");
+                return StatusCode(500, ex.Message);
             }
         }
         [HttpPost]
@@ -42,6 +45,9 @@ namespace BackendDev.Controllers
         [Route("{id}/add")]
         public async Task<IActionResult> AddFavorite(Guid id)
         {
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
             {
                 await _favoriteMoviesService.AddFavorite(User.Identity.Name, id);
@@ -49,12 +55,12 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during adding Favorite Film");
+                return StatusCode(500, ex.Message);
             }
         }
         [HttpDelete]
@@ -62,6 +68,9 @@ namespace BackendDev.Controllers
         [Route("{id}/delete")]
         public async Task<IActionResult> DeleteFavorite(Guid id)
         {
+            var TokenIsValid = await _favoriteMoviesService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
             {
                await _favoriteMoviesService.DeleteFavorite(User.Identity.Name, id);
@@ -69,12 +78,12 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during deleting Favorite Film");
+                return StatusCode(500, ex.Message);
             }
         }
     }

@@ -35,5 +35,9 @@ namespace BackendDev.Data.ViewModels
             Reviews = movieModelDb.Reviews.Select(x => new ReviewShortModel(x)).ToList();
 
         }
+        public MovieElementModel()
+        {
+
+        }
     }
 }

@@ -17,5 +17,9 @@ namespace BackendDev.Data.ViewModels
             Id = reviewModelBd.Id.ToString();
             Rating = reviewModelBd.Rating;
         }
+        public ReviewShortModel()
+        {
+
+        }
     }
 }

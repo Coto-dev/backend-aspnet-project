@@ -23,20 +23,29 @@ namespace BackendDev.Controllers
         [Authorize]
         public async Task<IActionResult> AddReviewToMovie(Guid movieId, [FromBody]ReviewModifyModel reviewModifyModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var TokenIsValid = await _reviewService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
-            {
-                await _reviewService.AddReviewToMovie(movieId, reviewModifyModel, User.Identity.Name);
-                return Ok();
-            }
-            catch (ArgumentException e)
-            {
-                return Problem(e.Message);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during adding review");
-            }
+                {
+                    await _reviewService.AddReviewToMovie(movieId, reviewModifyModel, User.Identity.Name);
+                    return Ok();
+                }
+                catch (ArgumentException e)
+                {
+                    return NotFound(e.Message);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    return StatusCode(500, ex.Message);
+               }
+            
+           
          
         }
 
@@ -45,6 +54,13 @@ namespace BackendDev.Controllers
         [Authorize]
         public async Task<IActionResult> EditReview(Guid movieId,Guid id, [FromBody] ReviewModifyModel reviewModifyModel)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var TokenIsValid = await _reviewService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
             {
                 await _reviewService.EditReview(movieId, id, reviewModifyModel, User.Identity.Name);
@@ -52,12 +68,12 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors editting review");
+                return StatusCode(500, ex.Message);
             }
 
         }
@@ -67,6 +83,9 @@ namespace BackendDev.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteReview(Guid movieId, Guid id)
         {
+            var TokenIsValid = await _reviewService.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
             try
             {
                 await _reviewService.DeleteReview(movieId, id, User.Identity.Name);
@@ -74,12 +93,12 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors deleting review");
+                return StatusCode(500, ex.Message);
             }
 
         }

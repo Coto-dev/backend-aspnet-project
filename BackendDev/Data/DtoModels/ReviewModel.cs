@@ -28,5 +28,9 @@ namespace BackendDev.Data.ViewModels
             CreateDateTime = reviewModelBd.CreateDateTime;
             Author = new UserShortModel(reviewModelBd.User);
         }
+        public ReviewModel()
+        {
+
+        }
     }
 }

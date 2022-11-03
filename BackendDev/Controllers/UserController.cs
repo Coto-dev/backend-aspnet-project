@@ -12,10 +12,12 @@ namespace BackendDev.Controllers
     public class UserController : Controller
     {
         private IUserService _userservice;
-       
-        public UserController(IUserService userservice)
+        private ILogger<UserController> _logger;
+
+        public UserController(IUserService userservice, ILogger<UserController> logger)
         {
             _userservice = userservice;
+            _logger = logger;
         }
         [HttpGet]
         [Authorize]
@@ -23,10 +25,11 @@ namespace BackendDev.Controllers
 
         public async Task<ActionResult<ProfileModel>> GetProfile(){
 
+
             var TokenIsValid = await _userservice.CheckToken(Request);
-            if (TokenIsValid)
-            {
-                try
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
+            try
                 {
                     var profile = _userservice.GetProfile(User.Identity.Name);
                     if (profile != null)
@@ -37,27 +40,30 @@ namespace BackendDev.Controllers
                 catch (ArgumentException e)
                 {
 
-                    return Problem(e.Message);
+                    return NotFound(e.Message);
                 }
                 catch (Exception ex)
                 {
 
-                    // TODO: Добавить логирование
-                    return StatusCode(500, "Errors get profile");
+                    _logger.LogError(ex.Message);
+                    return StatusCode(500, ex.Message);
                 }
-            }
-
-            else return BadRequest(new { errorText = "Invalid token" });
+           
         }
         [HttpPut]
         [Authorize]
         [Route("profile")]
         public async Task<ActionResult>EditProfile([FromBody] ProfileModel modelDto)
         {
-            var TokenIsValid = await _userservice.CheckToken(Request);
-            if (TokenIsValid)
+
+            if (!ModelState.IsValid)
             {
-                try
+                return BadRequest(ModelState);
+            }
+            var TokenIsValid = await _userservice.CheckToken(Request);
+            if (!TokenIsValid)
+                return BadRequest("невалидный токен");
+            try
                 {
                        await _userservice.EditProfile(modelDto);
                         return Ok();
@@ -66,15 +72,14 @@ namespace BackendDev.Controllers
                 }
                 catch (ArgumentException e)
                 {
-                    return Problem(e.Message);
+                    return NotFound(e.Message);
                 }
                 catch (Exception ex)
                 {
-                    // TODO: Добавить логирование
-                    return StatusCode(500, "Errors edit profile");
+                    _logger.LogError(ex.Message);
+                    return StatusCode(500, ex.Message);
                 }
-            }
-            else return BadRequest(new { errorText = "Invalid token" });
+            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BackendDev.Data;
 using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace BackendDev.Services
         public Task AddFilm(MovieDetailsModel movieDetailsModelDTO);
         public Task AddGenre(GenreModel GenreModelDto);
         public Task AddGenreToFilm(Guid IdFilm, Guid IdGenre);
-
+        public Task<Boolean> CheckToken(HttpRequest httpRequest);
 
     }
     public class ManageFilmsService: IManageFilmsService
@@ -23,14 +24,14 @@ namespace BackendDev.Services
         }
         public async Task AddFilm(MovieDetailsModel movieDetailsModelDTO)
         {
-            foreach (MovieModel movieDb in _contextData.MovieModels)
+/*            foreach (MovieModel movieDb in _contextData.MovieModels)
             {
                 if (movieDb.Name == movieDetailsModelDTO.Name)
                 {
                     throw new ArgumentException("фильм с таким названием уже существует");
                 }
             }
-      
+      */
             await _contextData.MovieModels.AddAsync(new MovieModel(movieDetailsModelDTO));
             await _contextData.SaveChangesAsync();
             
@@ -65,6 +66,19 @@ namespace BackendDev.Services
 
             await _contextData.Genres.AddAsync(new GenreModelBd(GenreModelDto));
             await _contextData.SaveChangesAsync();
+        }
+        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+        {
+            var token = httpRequest.Headers["Authorization"];
+            foreach (InvalidToken InvToken in _contextData.InvalidTokens)
+            {
+                if (InvToken.JWTToken == token)
+                {
+                    return Task.FromResult(false);
+                }
+                else return Task.FromResult(true);
+            }
+            return Task.FromResult(true);
         }
     }
 }

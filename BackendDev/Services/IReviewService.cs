@@ -1,4 +1,5 @@
-﻿using BackendDev.Data.Models;
+﻿using BackendDev.Data;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,30 +45,49 @@ namespace BackendDev.Services
         }
         public async Task EditReview(Guid movieId, Guid reviewId, ReviewModifyModel reviewModifyModelDTO, string UserName)
         {
-            var user = _contextData.Users.Where(x => x.UserName == UserName).FirstOrDefault();
+
+            var ReviewDb = _contextData.ReviewModels.Include(x => x.User).FirstOrDefault(x => x.Id == reviewId);
+            if (ReviewDb == null)
+                throw new ArgumentException("отзыва с таким айди не существует");
+
+            if (ReviewDb.User.UserName != UserName)
+                throw new ArgumentException("У вас нет прав на редактирование");
+
+            var user = await _contextData.Users.Where(x => x.UserName == UserName).FirstOrDefaultAsync();
             if (user != null)
             {
-                var reviewModel = new ReviewModelBd(reviewId, reviewModifyModelDTO, user);
-                var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
-                if (movie != null)
-                {
-                   _contextData.Update(reviewModel);
-                   _contextData.ReviewModels.Update(reviewModel);
-                    await _contextData.SaveChangesAsync();
-                }
-                else throw new ArgumentException("фильма с таким id не существует");
+                _contextData.Attach(ReviewDb);
+                ReviewDb.updateModel(reviewModifyModelDTO);
+                await _contextData.SaveChangesAsync();
+                // var reviewModel = new ReviewModelBd(reviewId, reviewModifyModelDTO, user);
+                /*  var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).FirstOrDefaultAsync();
+                  if (movie != null)
+                  {
+                     _contextData.Update(reviewModel);
+                     _contextData.ReviewModels.Update(reviewModel);
+                      await _contextData.SaveChangesAsync();
+                  }
+                  else throw new ArgumentException("фильма с таким id не существует");*/
 
             }
 
             else throw new ArgumentException("Такого пользователя не существует");
         }
 
-        public async Task DeleteReview(Guid movieId, Guid reviewIdDTO, string UserName)
+        public async Task DeleteReview(Guid movieId, Guid reviewId, string UserName)
         {
-            var movie = _contextData.MovieModels.Where(x => x.Id == movieId).Include(x => x.UserMovies).ThenInclude(x => x.Reviews).FirstOrDefault();
+
+            var ReviewDb = await _contextData.ReviewModels.Include(x => x.User).FirstOrDefaultAsync(x => x.Id == reviewId);
+            if (ReviewDb == null)
+                throw new ArgumentException("отзыва с таким айди не существует");
+
+            if (ReviewDb.User.UserName != UserName)
+                throw new ArgumentException("У вас нет прав на редактирование");
+
+            var movie = await _contextData.MovieModels.Where(x => x.Id == movieId).Include(x => x.UserMovies).ThenInclude(x => x.Reviews).FirstOrDefaultAsync();
             if (movie != null)
             {
-                var review = await _contextData.ReviewModels.Where(x => x.Id == reviewIdDTO).FirstOrDefaultAsync();
+                var review = await _contextData.ReviewModels.Where(x => x.Id == reviewId).FirstOrDefaultAsync();
                 if (review != null)
                 {
                     _contextData.ReviewModels.Remove(review);

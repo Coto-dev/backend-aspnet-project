@@ -18,6 +18,12 @@ namespace BackendDev.Data.Models
         [Required]
         public UserModel User { get; set; }
 
+        public void updateModel(ReviewModifyModel reviewModelDTO)
+        {
+            ReviewText = reviewModelDTO.ReviewText;
+            Rating = reviewModelDTO.Rating;
+            isAnonymous = reviewModelDTO.isAnonymous;
+        }
         public ReviewModelBd(ReviewModifyModel reviewModelDTO, UserModel user)
         {
             ReviewText = reviewModelDTO.ReviewText;

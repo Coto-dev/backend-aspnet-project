@@ -12,5 +12,9 @@
             PageCount = pageCount;
             CurrentPage = currentPage;
         }
+        public PageInfoModel()
+        {
+
+        }
     }
 }

@@ -14,5 +14,9 @@
             Movies = movies;//tolist
             PageInfo = pageInfo;
         }*/
+       public MoviesPagedListModel()
+        {
+
+        }
     }
 }

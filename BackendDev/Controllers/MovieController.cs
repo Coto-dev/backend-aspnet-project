@@ -1,6 +1,8 @@
-﻿using BackendDev.Data.Models;
+﻿using System.Data;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using BackendDev.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -27,16 +29,16 @@ namespace BackendDev.Controllers
         {
             try
             {
-                return Ok((_movieService.GetMoviePage(page)));
+                return Ok(_movieService.GetMoviePage(page));
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound((e.Message));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during getting MoviesPagedListModel");
+                return StatusCode(500, ex.Message);
             }
         }
 
@@ -50,20 +52,25 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return Problem(e.Message);
+                return NotFound(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during getting MovieDetailsModel");
+                return StatusCode(500, ex.Message);
             }
         }
         
 
         [HttpPost]
+         [Authorize(Roles = "admin")]
         [Route("film/add")]
         public async Task<IActionResult> AddFilm([FromBody] MovieDetailsModel movieDetailsModelDTO)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             try
             {
              await _manageFilmService.AddFilm(movieDetailsModelDTO);
@@ -82,6 +89,7 @@ namespace BackendDev.Controllers
         }
 
         [HttpPost]
+         [Authorize(Roles = "admin")]
         [Route("genre/add")]
         public async Task<IActionResult> AddGenre([FromBody] GenreModel genreModelDTO)
         {
@@ -102,6 +110,7 @@ namespace BackendDev.Controllers
 
         }
         [HttpPost]
+       [Authorize(Roles = "admin")]
         [Route("addGenre/{genreId}/toMovie/{movieId}")]
         public async Task<IActionResult> AddGenreToMovie(Guid genreId, Guid movieId)
         {

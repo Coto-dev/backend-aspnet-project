@@ -21,12 +21,10 @@ namespace BackendDev.Controllers
     {
 
         private IAuthService _authService;
-        private ContextDataBase _contextData;
-        private readonly ILogger _logger;
-        public AuthController(IAuthService authService,ContextDataBase contextData, ILogger logger)
+        private ILogger<AuthController> _logger; 
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
-            _contextData = contextData;
             _logger = logger;
         }
 
@@ -34,11 +32,10 @@ namespace BackendDev.Controllers
         [Route("register")]
         public async Task<IActionResult> Post(UserRegisterModel RegisterModelDto)
         {
-            if (!ModelState.IsValid) //Проверка полученной модели данных
+            if (!ModelState.IsValid) 
             {
-                return StatusCode(401, "Model is incorrect");
+                return BadRequest(ModelState);
             }
-
             try
             {
                 var response = await _authService.Add(RegisterModelDto);
@@ -48,21 +45,21 @@ namespace BackendDev.Controllers
             }
             catch (ArgumentException e)
             {
-                return NotFound(e.Message);
+                return BadRequest(e.Message);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during adding user");
+                return StatusCode(500, ex.Message);
             }
         }
         [HttpPost]
         [Route("login")]
         public IActionResult Login([FromBody]LoginCredentials LoginDto)
         {
-            if (!ModelState.IsValid) //Проверка полученной модели данных
+            if (!ModelState.IsValid) 
             {
-                return StatusCode(401, "Model is incorrect");
+                return BadRequest(ModelState);
             }
 
             try
@@ -73,10 +70,14 @@ namespace BackendDev.Controllers
                 else return BadRequest(new { errorText = "Invalid username or password." });
 
             }
+            catch (ArgumentException e)
+            {
+                return Problem(statusCode:400 ,title :e.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500, "Errors during login user");
+                return StatusCode(500, ex.Message);
             }
            
         }
@@ -94,7 +95,7 @@ namespace BackendDev.Controllers
             else return BadRequest(new { errorText = "Invalid token" });
         }
 
-        [HttpGet]
+      /*  [HttpGet]
         [Authorize(Roles = "admin")]
         [Route("test_admin")]
         public IActionResult TestAdmin()
@@ -111,6 +112,6 @@ namespace BackendDev.Controllers
             await _authService.Logout(Request);
            return Ok();
 
-        }
+        }*/
     }
 }

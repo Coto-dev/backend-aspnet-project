@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BackendDev.Data;
 using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendDev.Services
 {
-  public  interface IMovieService
+    public  interface IMovieService
     {
         public Task<MovieDetailsModel> GetMovieDetails(Guid Id);
         public MoviesPagedListModel GetMoviePage(int Page);
@@ -21,9 +22,9 @@ namespace BackendDev.Services
         }
        public async Task<MovieDetailsModel> GetMovieDetails(Guid Id)
         {
-            var modelDTO = new MovieDetailsModel(await _contextData.MovieModels.Where(x => x.Id == Id).Include(x=>x.MovieGenres).Include(x=>x.Reviews).ThenInclude(x=>x.User).FirstOrDefaultAsync());
+            var modelDTO = await _contextData.MovieModels.Where(x => x.Id == Id).Include(x => x.MovieGenres).Include(x => x.Reviews).ThenInclude(x => x.User).FirstOrDefaultAsync();
             if (modelDTO != null)
-            return modelDTO;
+                return (new MovieDetailsModel(modelDTO));
             else throw new ArgumentException("Фильм с таким Id не существует");
         }
         public MoviesPagedListModel GetMoviePage(int Page) 

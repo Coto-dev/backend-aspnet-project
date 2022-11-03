@@ -1,5 +1,5 @@
 using BackendDev;
-using BackendDev.Data.Models;
+using BackendDev.Data;
 using BackendDev.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

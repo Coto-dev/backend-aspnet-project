@@ -20,6 +20,10 @@ namespace BackendDev.Data.ViewModels
             NickName = userModelBd.UserName;
             avatar = userModelBd.AvatarLink;
         }
+        public UserShortModel()
+        {
+
+        }
     }
     
 }

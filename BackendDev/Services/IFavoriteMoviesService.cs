@@ -1,4 +1,5 @@
-﻿using BackendDev.Data.Models;
+﻿using BackendDev.Data;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace BackendDev.Services
         public MoviesListModel GetMoviesList(string userName);
         public Task AddFavorite(string userName,Guid id);
         public Task DeleteFavorite(string userName,Guid id);
+        Task<bool> CheckToken(HttpRequest httpRequest);
     }
     public class FavoriteMoviesService : IFavoriteMoviesService
     {
@@ -59,6 +61,19 @@ namespace BackendDev.Services
                 else throw new ArgumentException("такого фильма не существует");
             }
             else throw new ArgumentException("такого пользователя не существует");
+        }
+        public Task<Boolean> CheckToken(HttpRequest httpRequest)
+        {
+            var token = httpRequest.Headers["Authorization"];
+            foreach (InvalidToken InvToken in _contextData.InvalidTokens)
+            {
+                if (InvToken.JWTToken == token)
+                {
+                    return Task.FromResult(false);
+                }
+                else return Task.FromResult(true);
+            }
+            return Task.FromResult(true);
         }
     }
 }

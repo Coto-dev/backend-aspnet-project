@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BackendDev.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace BackendDev.Data.Models
+namespace BackendDev.Data
 {
     public class ContextDataBase : DbContext
     {

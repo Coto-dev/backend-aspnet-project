@@ -1,6 +1,8 @@
-﻿using BackendDev.Data.Models;
+﻿using BackendDev.Data;
+using BackendDev.Data.Models;
 using BackendDev.Data.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendDev.Services
 {
@@ -13,39 +15,22 @@ namespace BackendDev.Services
     public class UserService : IUserService
     {
         private readonly ContextDataBase _contextData;
-       // private readonly ILogger _logger;
+
         public UserService(ContextDataBase contextData)
         {
             _contextData = contextData;
-          //  _logger = logger;   
         }
         public ProfileModel GetProfile(string UserName)
         {
-            var profile = new ProfileModel();
-            foreach (UserModel user in _contextData.Users)
-            {
-                if (user.UserName == UserName)
-                {
-                     profile = new ProfileModel
-                    {
-                        Id = user.Id.ToString(),
-                        NickName = user.UserName,
-                        Email = user.Email,
-                        AvatarLink = user.AvatarLink,
-                        Name = user.Name,
-                        BirthDate = user.BirthDate,
-                        Gender = user.Gender
+            var profile = _contextData.Users.FirstOrDefault(x=>x.UserName == UserName);
+            if (profile != null)
+            return new ProfileModel(profile);
+            else throw new ArgumentException("Такого пользователя не существует");
 
-                    };
-                    return profile;
-                }
-            
-            }
-            return profile;
         }
         public async Task EditProfile(ProfileModel modelDto)
         {
-            foreach (UserModel user in _contextData.Users)
+            /*foreach (UserModel user in _contextData.Users)
             {
                 if (user.Id.ToString() == modelDto.Id.ToString())
                 {
@@ -56,7 +41,18 @@ namespace BackendDev.Services
                     user.BirthDate = modelDto.BirthDate;
                     user.Gender = modelDto.Gender;
                 }
+            }*/
+            var user = await _contextData.Users.FirstOrDefaultAsync(x => x.Id == modelDto.Id);
+            if (user != null)
+            {
+                user.UserName = modelDto.NickName;
+                user.Email = modelDto.Email;
+                user.AvatarLink = modelDto.AvatarLink;
+                user.Name = modelDto.Name;
+                user.BirthDate = modelDto.BirthDate;
+                user.Gender = modelDto.Gender;
             }
+            else throw new ArgumentException("Такого пользователя не существует");
             await _contextData.SaveChangesAsync();
         }
         public Task<Boolean> CheckToken(HttpRequest httpRequest)
